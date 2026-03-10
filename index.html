@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nitin 💗 Mahi </title>
+  <!-- pookie fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sacramento&family=Caveat:wght@400;600;700&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #ffd0dc;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Quicksand', sans-serif;
+      padding: 0.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+    /* ---------- INTERACTIVE FALLING EMOJI BACKGROUND ---------- */
+    .emoji-rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .emoji-rain span {
+      position: absolute;
+      font-size: 2.2rem;
+      animation: fallRotate 10s linear infinite;
+      user-select: none;
+      opacity: 0.7;
+      filter: drop-shadow(0 4px 8px #ff88aa);
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes fallRotate {
+      0% { transform: translateY(-20vh) rotate(0deg); opacity: 0.9; }
+      100% { transform: translateY(120vh) rotate(720deg); opacity: 0.2; }
+    }
+    /* summoned bow animation */
+    .summon-bow {
+      position: fixed;
+      font-size: 3rem;
+      pointer-events: none;
+      z-index: 15;
+      filter: drop-shadow(0 0 10px #ffa5d0);
+      animation: floatUpFade 3s ease-out forwards;
+    }
+    @keyframes floatUpFade {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      70% { opacity: 0.8; }
+      100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
+    }
+    /* compact book card - less space, background visible */
+    .book {
+      max-width: 700px;
+      width: 95%;
+      background: rgba(255, 235, 245, 0.8);
+      backdrop-filter: blur(12px);
+      border-radius: 60px 60px 60px 60px;
+      box-shadow: 0 15px 30px rgba(200, 80, 130, 0.5), 0 0 0 5px #ffffff, 0 0 0 10px #ffb6c1;
+      padding: 1.5rem 1.8rem;
+      border: 3px solid white;
+      position: relative;
+      z-index: 20;
+      margin: 0.5rem;
+    }
+    .slides-container {
+      min-height: 500px;
+    }
+    .slide {
+      display: none;
+    }
+    .slide.active {
+      display: block;
+    }
+    /* ONE-LINE title fix */
+    .one-line-title {
+      font-family: 'Sacramento', cursive;
+      font-size: 3.8rem;
+      color: #a13560;
+      text-shadow: 3px 3px 0 #ffb6c1, 5px 5px 0 white;
+      line-height: 1;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      flex-wrap: nowrap;
+      margin: 0.2rem 0;
+    }
+    .heart-icon-large {
+      font-size: 3.5rem;
+      color: #ff3b6f;
+      filter: drop-shadow(0 4px 4px #ffa5c0);
+      animation: heartbeat 1.5s ease infinite;
+    }
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.15); }
+      50% { transform: scale(1.1); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .message-box {
+      background: white;
+      border-radius: 70px 70px 70px 20px;
+      padding: 1.2rem;
+      font-family: 'Caveat', cursive;
+      font-size: 1.8rem;
+      color: #b14e74;
+      border: 4px solid #ffb6c1;
+      box-shadow: 0 10px 0 #e09bb3;
+      max-width: 400px;
+      margin: 1rem auto;
+    }
+    .game-panel {
+      background: rgba(255, 250, 252, 0.9);
+      border-radius: 50px;
+      padding: 1.5rem;
+      border: 4px solid #ffb0c3;
+      box-shadow: 0 10px 0 #d58ba5;
+      margin: 1rem 0;
+    }
+    #fallingCanvas {
+      display: block;
+      margin: 0 auto;
+      background: #fff0f5;
+      border-radius: 40px;
+      box-shadow: 0 8px 0 #d999b0;
+      width: 100%;
+      max-width: 420px;
+      height: auto;
+      cursor: pointer;
+      border: 4px solid white;
+    }
+    .score-badge {
+      background: #ffe2ec;
+      padding: 0.5rem 1.5rem;
+      border-radius: 50px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #b32e5e;
+      border: 3px solid white;
+      display: inline-block;
+      margin: 0.3rem;
+      font-family: 'Caveat', cursive;
+      box-shadow: 0 4px 0 #c47997;
+    }
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+    }
+    .btn {
+      background: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #ad5f7e;
+      box-shadow: 0 6px 0 #e6a0b9;
+      cursor: pointer;
+      border: 3px solid white;
+    }
+    .btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #e6a0b9;
+    }
+    .progress-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 15px 0;
+    }
+    .dot {
+      width: 16px;
+      height: 16px;
+      background: #ffbfd5;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+    }
+    .dot.active-dot {
+      background: #ff4d7a;
+      transform: scale(1.3);
+    }
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      max-width: 350px;
+      margin: 1rem auto;
+    }
+    .tile {
+      background: #ffb6cc;
+      border-radius: 20px 5px 20px 5px;
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 5px 0 #a15d78;
+      cursor: pointer;
+    }
+    .quiz-option {
+      background: white;
+      padding: 0.8rem 1.5rem;
+      margin: 0.8rem auto;
+      border-radius: 50px;
+      font-size: 1.6rem;
+      font-family: 'Caveat', cursive;
+      box-shadow: 0 5px 0 #eba2bb;
+      cursor: pointer;
+      max-width: 250px;
+    }
+    .love-names {
+      font-family: 'Sacramento', cursive;
+      font-size: 2.5rem;
+      color: #c43e6b;
+    }
+    footer {
+      text-align: center;
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem;
+      color: #b84772;
+    }
+  </style>
+</head>
+<body>
+  <!-- interactive background: falling emojis + summon bow on tap -->
+  <div class="emoji-rain" id="emojiRain"></div>
+  <div id="summonContainer" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:12;"></div>
+
+<div class="book">
+  <div class="slides-container" id="slidesContainer">
+    <!-- SLIDE 0: one-line title (Nitin 💗 Mahi) -->
+    <div class="slide active" id="slide0">
+      <div style="text-align: center;">
+        <div class="one-line-title">
+          <span>Nitin</span>
+          <span class="heart-icon-large">💗</span>
+          <span>Mahi</span>
+        </div>
+        <div class="message-box">
+          For my dear Mahi 💌<br>tap anywhere on background to summon 🎀
+        </div><br><br><br>
+        <button class="btn" id="startBtn">✨ Tap here to see the little world I made for you ✨</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1: hearts game (11 each, 13 hearts = 143) -->
+    <div class="slide" id="slide1">
+      <h2>💘 catch hearts! 💘</h2>
+      <div class="game-panel">
+        <p style="font-family:'Caveat'; font-size:1.4rem;">❤️ 11 pts · 13 hearts = 143</p>
+        <canvas id="fallingCanvas" width="420" height="260"></canvas>
+        <div style="text-align:center;">
+          <span class="score-badge">❤️ <span id="heartScore">0</span>/13</span>
+          <span class="score-badge">💯 <span id="totalScore">0</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: tiles -->
+    <div class="slide" id="slide2"><h2>🧩 tiles</h2><div class="game-panel"><div class="tile-grid" id="tileGrid"></div><p id="tileMsg"></p></div></div>
+    <!-- SLIDE 3: love meter -->
+    <div class="slide" id="slide3"><h2>💞 meter</h2><div class="game-panel" style="text-align:center;"><div class="love-names">Nitin 💗 Mahi</div><input type="range" min="0" max="143" value="143" disabled style="width:100%;"><div style="font-size:3rem;">143%</div></div></div>
+    <!-- SLIDE 4: quiz -->
+    <div class="slide" id="slide4"><h2>🍰 quiz</h2><div class="game-panel" style="text-align:center;"><div class="quiz-option">🍰 cake</div><div class="quiz-option">🍦 ice cream</div><div class="quiz-option">🍪 cookie</div><div id="quizResult" style="font-size:2rem;"></div></div></div>
+    <!-- slides 5-9 messages -->
+    <div class="slide" id="slide5"><h2>💭 for mahi</h2><div class="game-panel" style="font-size:2rem;">you're my pookie 💘</div></div>
+    <div class="slide" id="slide6"><h2>🌸 date dreams</h2><div class="game-panel" style="font-size:2rem;">bubble tea & cuddles</div></div>
+    <div class="slide" id="slide7"><h2>🍬 sweet</h2><div class="game-panel" style="font-size:2rem;">you're perfect 💕</div></div>
+    <div class="slide" id="slide8"><h2>🎵 our song</h2><div class="game-panel" style="font-size:2rem;">All songs which we hear together</div></div>
+    <div class="slide" id="slide9"><h2>💋 Mahi</h2><div class="game-panel" style="font-size:2rem;">lots of kisses for you💋</div></div>
+    <!-- SLIDE 10: proposal -->
+    <div class="slide" id="slide10"><h2>Mahi... will you?</h2><div class="game-panel" style="text-align:center; font-size:2.2rem;">be my girlfriend?💌<br><br><span class="love-names">Nitin 💗 Mahi</span></div><div class="button-row"><button class="btn" id="yesBtn">yes!! 💖</button><button class="btn" id="noBtn">no 💔</button></div></div>
+    <!-- SLIDE 11: accepted -->
+    <div class="slide" id="slide11"><h2>✨ she said yes!!! ✨</h2><div class="game-panel" style="font-size:1.5rem;">Nitin 💗 Mahi forever 🥳</div></div>
+  </div>
+
+  <!-- dots + nav (no infinite loop) -->
+  <div class="progress-indicator" id="dotContainer"></div>
+  <div class="button-row">
+    <button class="btn" id="prevBtn">← prev</button>
+    <button class="btn" id="nextBtn">next →</button>
+  </div>
+  <footer>Nitin 💗 Mahi</footer>
+</div>
+
+<script>
+(function() {
+  // ---------- BACKGROUND FALLING EMOJIS (random, rotating) ----------
+  const rainContainer = document.getElementById('emojiRain');
+  const emojiList = ['💋','❤️','💕','💞','💓','💖','💘','💝','🎀','💗'];
+  for (let i = 0; i < 40; i++) {
+    let span = document.createElement('span');
+    span.innerText = emojiList[Math.floor(Math.random() * emojiList.length)];
+    span.style.left = Math.random() * 100 + '%';
+    span.style.fontSize = (Math.random() * 2 + 1.5) + 'rem';
+    span.style.animationDuration = (Math.random() * 8 + 5) + 's';
+    span.style.animationDelay = (Math.random() * -15) + 's';
+    span.style.transform = `rotate(${Math.random()*360}deg)`;
+    rainContainer.appendChild(span);
+  }
+
+  // ---------- SUMMON BOW on background tap ----------
+  const summonContainer = document.getElementById('summonContainer');
+  document.body.addEventListener('click', function(e) {
+    // ignore if click inside book
+    if (e.target.closest('.book')) return;
+    
+    const bow = document.createElement('div');
+    bow.className = 'summon-bow';
+    bow.innerText = '🎀';
+    bow.style.left = (e.clientX - 30) + 'px';
+    bow.style.top = (e.clientY - 30) + 'px';
+    summonContainer.appendChild(bow);
+    
+    setTimeout(() => bow.remove(), 3000);
+  });
+
+  // ---------- SLIDE NAVIGATION (NO INFINITE LOOP) ----------
+  const slides = document.querySelectorAll('.slide');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const dotContainer = document.getElementById('dotContainer');
+  let currentSlide = 0;
+  const totalSlides = slides.length;
+
+  function updateDots() {
+    let html = '';
+    for (let i = 0; i < totalSlides; i++) {
+      html += `<span class="dot ${i === currentSlide ? 'active-dot' : ''}" data-index="${i}"></span>`;
+    }
+    dotContainer.innerHTML = html;
+    document.querySelectorAll('.dot').forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        goToSlide(parseInt(e.target.dataset.index));
+      });
+    });
+  }
+
+  function goToSlide(index) {
+    if (index < 0) index = 0;
+    if (index >= totalSlides) index = totalSlides - 1; // STOP at last, no infinite
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === index);
+    });
+    currentSlide = index;
+    updateDots();
+    
+    if (currentSlide === 1) startTapGame();
+    if (currentSlide === 2) initTileGame();
+    if (currentSlide === 4) initQuiz();
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => goToSlide(1));
+  prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+  nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+  goToSlide(0);
+
+  // ---------- HEARTS GAME (11 each, 13 hearts = 143) ----------
+  const canvas = document.getElementById('fallingCanvas');
+  const ctx = canvas.getContext('2d');
+  let heartScore = 0;
+  let hearts = [];
+  let gameActive = false;
+  let gameWon = false;
+
+  function startTapGame() {
+    gameActive = true;
+    gameWon = false;
+    heartScore = 0;
+    hearts = [];
+    for (let i = 0; i < 15; i++) {
+      hearts.push({ x: Math.random()*380+20, y: Math.random()*-300, speed: 1+Math.random()*2 });
+    }
+    updateScores();
+    requestAnimationFrame(drawGame);
+  }
+
+  function drawGame() {
+    if (!gameActive) return;
+    ctx.clearRect(0, 0, 420, 260);
+    hearts.forEach(h => {
+      h.y += h.speed;
+      if (h.y > 280) { h.y = -15; h.x = Math.random()*380+20; }
+      ctx.font = '38px "Segoe UI", "Apple Color Emoji"';
+      ctx.fillStyle = '#ff4d7a';
+      ctx.fillText('❤️', h.x, h.y);
+    });
+    requestAnimationFrame(drawGame);
+  }
+
+  function updateScores() {
+    document.getElementById('heartScore').innerText = heartScore;
+    document.getElementById('totalScore').innerText = heartScore * 11 + '/143';
+  }
+
+  function handleTap(e) {
+    if (!gameActive || gameWon) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    let clientX, clientY;
+    if (e.touches) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    const canvasX = (clientX - rect.left) * scaleX;
+    const canvasY = (clientY - rect.top) * scaleY;
+
+    for (let i = hearts.length-1; i>=0; i--) {
+      const h = hearts[i];
+      const dx = canvasX - h.x, dy = canvasY - h.y;
+      if (Math.sqrt(dx*dx+dy*dy) < 35) {
+        if (heartScore < 13) heartScore++;
+        hearts[i] = { x: Math.random()*380+20, y: -15, speed: 1+Math.random()*2 };
+        break;
+      }
+    }
+    if (heartScore > 13) heartScore = 13;
+    updateScores();
+    if (heartScore === 13 && !gameWon) {
+      gameWon = true;
+      alert('🎉 YOU WON FALLING HEARTS GAME! 🎉');
+    }
+  }
+
+  canvas.addEventListener('click', handleTap);
+  canvas.addEventListener('touchstart', handleTap, {passive: false});
+
+  // ---------- TILE GAME ----------
+  function initTileGame() {
+    const grid = document.getElementById('tileGrid');
+    const emojis = ['💓','💞','💝','💖'];
+    let tiles = [...emojis, ...emojis].sort(()=>Math.random()-0.5);
+    grid.innerHTML = '';
+    tiles.forEach((emoji, i) => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.textContent = '❓';
+      tile.dataset.emoji = emoji;
+      tile.dataset.flipped = 'false';
+      tile.dataset.matched = 'false';
+      tile.onclick = function() {
+        if (this.dataset.flipped === 'true' || this.dataset.matched === 'true') return;
+        this.textContent = this.dataset.emoji;
+        this.dataset.flipped = 'true';
+        const flipped = document.querySelectorAll('.tile[data-flipped="true"]');
+        if (flipped.length === 2) {
+          if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+            flipped.forEach(f => { f.dataset.matched = 'true'; f.dataset.flipped = 'false'; f.style.visibility = 'hidden'; });
+            document.getElementById('tileMsg').innerText = 'match! 💕';
+            if (document.querySelectorAll('.tile[data-matched="true"]').length === 8) alert('🎉 YOU WON TILE GAME! 🎉');
+          } else {
+            setTimeout(() => flipped.forEach(f => { f.textContent = '❓'; f.dataset.flipped = 'false'; }), 400);
+          }
+        }
+      };
+      grid.appendChild(tile);
+    });
+  }
+
+  // ---------- QUIZ ----------
+  function initQuiz() {
+    document.querySelectorAll('.quiz-option').forEach(opt => {
+      opt.onclick = () => {
+        alert('🎉 YOU WON THIS GAME!🎉');
+        document.getElementById('quizResult').innerText = '💯 correct! 💯';
+      };
+    });
+  }
+
+  // proposal
+  document.getElementById('yesBtn').addEventListener('click', () => goToSlide(11));
+  document.getElementById('noBtn').addEventListener('click', () => { alert('you meant YES! 💘'); goToSlide(11); });
+})();
+</script>
+</body>
+</html>
